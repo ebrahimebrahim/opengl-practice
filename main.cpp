@@ -174,7 +174,7 @@ private:
     }
 
     void deleteShaders(){
-        glDeleteShader(shaderProgram);
+        glDeleteProgram(shaderProgram);
         shaderProgram = 0;
     }
 

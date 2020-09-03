@@ -1,0 +1,19 @@
+---
+
+From a helpful redditor:
+
+A VBO is a buffer that holds vertex data. You can upload data to it by first binding it to a target and then calling glBufferData on that target. When you bound this buffer to GL_ARRAY_BUFFER the next draw call (glDrawArrays for example) will use the data from that buffer.
+
+Before that works though, you have to specify the layout of that buffer. You do that with glVertexAttribPointer.
+
+That is all you need for rendering (well except for shaders). You do not need a VAO.
+
+So why would you need a VAO then?
+
+Say you have 2 VBOs with a different layout each. When you want to render with VBO-1 you have to bind it and specify its layout. Same for VBO-2. You have to specify the layout every time you bind another VBO that has a different layout.
+
+VAOs can help you with that: When you have a bound VAO, every call to glVertexAttribPointer will associate that single layout element of that VBO with the VAO. When you then later choose to draw from that VBO you just have to bind the VAO and all the binding of the VBO and layout-specifying will be done for you.
+
+Note: There are a few more functions that save something in a VAO but I tried to keep it short.
+
+---

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cmath>
 
 void glfw_error_callback(int error, const char* description){
     std::cerr << "GLFW Error: " << description << std::endl;
@@ -220,7 +221,12 @@ private:
     void render() {
         glClearColor(0.3,0.2,0.2,1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        //glDrawArrays(GL_TRIANGLES,0,3);
+
+        float greenValue = sin(glfwGetTime()) / 2.0f + 0.5f;
+        GLint vertexColorLocation = glGetUniformLocation(shaderProgram,"colorFromApplication");
+        if (vertexColorLocation == -1) throw std::runtime_error("Application has peuped while looking up a uniform variable.");
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
     }
 

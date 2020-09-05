@@ -187,10 +187,10 @@ private:
         glGenBuffers(1,&VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.0f,  0.5f, 0.0f,
-             0.7f,  0.7f, 0.0f
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+             0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+             0.7f,  0.7f, 0.0f, 1.0f, 0.0f, 0.0f
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -199,8 +199,10 @@ private:
         GLuint indices[] = {0,1,2,2,3,1};
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices), indices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(float),(void*)0);
+        glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(float),(void*)(3*sizeof(float)));
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
        
         // We could unbind the VAO and only bind it when we want to draw the triangle, inside the render loop.
         // This might be safer so we dont overwrite the VAO accidentally.

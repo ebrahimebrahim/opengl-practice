@@ -9,4 +9,4 @@ void main()
 {
     FragColor = colorFromVertShader;
     FragColor.g *= colorFromApplication.g;
-} 
+}

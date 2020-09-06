@@ -39,7 +39,7 @@ class Application {
           glClear(GL_COLOR_BUFFER_BIT);
 
           float greenValue = sin(glfwGetTime()) / 2.0f + 0.5f;
-          // Setting a uniform, as done below, should really be done via a Shader member function
+          // TODO Setting a uniform, as done below, should really be done via a Shader member function
           GLint vertexColorLocation = glGetUniformLocation(shader.shader_program_id,"colorFromApplication");
           if (vertexColorLocation == -1) throw std::runtime_error("Application has peuped while looking up a uniform variable.");
           glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);

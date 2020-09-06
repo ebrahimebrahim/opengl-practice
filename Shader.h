@@ -14,8 +14,13 @@ class Shader {
 
         // Throws runtime errors when files not found or there are compiling/linking issues
         Shader(std::string vertex_shader_path, std::string fragment_shader_path);
+        Shader() = default;
+        Shader(const Shader&) = delete; // Do not copy. It manages a global OpenGL resource.
+        Shader& operator=(const Shader&) = delete;
+        Shader(Shader&&);
+        Shader& operator=(Shader&&);
         ~Shader();
-        // TODO: Create default ctor, copy ctor, move ctor, copy ass, mov asst
+
 
         // Tell OpenGL that we are now using this shader
         void use() const;

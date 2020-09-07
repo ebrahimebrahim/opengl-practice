@@ -1,4 +1,4 @@
-#include "glad/include/glad/glad.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -29,7 +29,7 @@ class Application {
     void run() {
         initWindow();
 
-        Shader shader{"shader.vert","shader.frag"};
+        Shader shader{"src/shaders/shader.vert","src/shaders/shader.frag"};
         setupTriangleVAO();
 
         shader.use();

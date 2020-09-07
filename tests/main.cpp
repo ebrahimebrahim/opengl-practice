@@ -12,13 +12,8 @@
 #include<Shader.h>
 
 
-TEST_CASE("Shader default ctor works","[Shader]") {
-  Shader s{};
-  REQUIRE( s.shader_program_id == 0 );
-}
 
-
-// --- OpenGL context setup
+// --- OpenGL context setup and teardown ---
 void glfw_error_callback(int error, const char* description){
     std::cerr << "GLFW Error: " << description << std::endl;
 }
@@ -53,6 +48,13 @@ void teardownOpenGL(GLFWwindow* window){
 // ------------------------
 
 
+// --- Shader class tests ---------------
+
+TEST_CASE("Shader default ctor works","[Shader]") {
+  Shader s{};
+  REQUIRE( s.shader_program_id == 0 );
+}
+
 Shader return_a_shader() {return Shader("tests/shaders/t.vert","tests/shaders/t.frag");}
 bool shader_is_live(const Shader & s) {return s.shader_program_id != 0;}
 TEST_CASE("Shader move works","[Shader]") {
@@ -84,3 +86,5 @@ TEST_CASE("Shader move works","[Shader]") {
 
   teardownOpenGL(offscreen_context);
 }
+
+// ------------------------------------

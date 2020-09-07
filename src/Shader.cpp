@@ -96,3 +96,33 @@ void Shader::use() const {
   //use this shader_program_id for future drawing commands
   glUseProgram(shader_program_id);
 }
+
+
+void Shader::setUniform(const char* name, const std::vector<GLfloat> & values) const {
+  if (!shader_program_id)
+    throw std::runtime_error("Attempted to set a uniform in an uninitialized Shader");
+  GLint location = glGetUniformLocation(shader_program_id,name);
+  if (location == -1) {
+    std::stringstream error_msg;
+    error_msg << "Error looking up a uniform variable: " << name;
+    throw std::runtime_error(error_msg.str());
+  }
+  switch (values.size()) {
+    case 1:
+      glUniform1f(location, values[0]);
+      break;
+    case 2:
+      glUniform2f(location, values[0],values[1]);
+      break;
+    case 3:
+      glUniform3f(location, values[0],values[1],values[2]);
+      break;
+    case 4:
+      glUniform4f(location, values[0],values[1],values[2],values[3]);
+      break;
+    default:
+      std::stringstream error_msg;
+      error_msg << "Unable to set uniform variable of size " << values.size();
+      throw std::runtime_error(error_msg.str());
+  }
+}

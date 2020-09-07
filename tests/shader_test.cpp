@@ -43,3 +43,38 @@ TEST_CASE("Shader move works","[Shader]") {
 
   teardownOpenGL(offscreen_context);
 }
+
+
+TEST_CASE("Shader object can set uniform vectors of floats","[Shader]"){
+  GLFWwindow* offscreen_context = setupOpenGL();
+  Shader s{"tests/shaders/t.vert","tests/shaders/t.frag"};
+  REQUIRE( shader_is_live(s) );
+
+  SECTION("1 element float"){
+    std::vector<GLfloat> v;
+    v.push_back(42.0);
+    const char* name = "test_uniform_1f";
+    s.setUniform(name,v);
+    s.use();
+    GLint loc = glGetUniformLocation(s.shader_program_id,name);
+    REQUIRE(loc!=-1);
+    GLfloat actual_val{35.0};
+    glGetUniformfv(s.shader_program_id,loc,&actual_val);
+    REQUIRE(actual_val == 42.0);
+  }
+
+  SECTION("4 element float"){
+    std::vector<GLfloat> v = {42.0, 43.0, 44.0, 45.0};
+    const char* name = "test_uniform_4f";
+    s.setUniform(name,v);
+    s.use();
+    GLint loc = glGetUniformLocation(s.shader_program_id,name);
+    REQUIRE(loc!=-1);
+    GLfloat actual_vals[4];
+    glGetUniformfv(s.shader_program_id,loc,actual_vals);
+    REQUIRE(actual_vals[0] == 42.0);
+    REQUIRE(actual_vals[3] == 45.0);
+  }
+
+  teardownOpenGL(offscreen_context);
+}

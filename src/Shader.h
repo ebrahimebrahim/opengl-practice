@@ -3,8 +3,10 @@
 
 #include <glad/glad.h>
 
+#include <vector>
 #include <string>
 #include <stdexcept>
+using namespace std::literals::string_literals;
 
 class Shader {
     public:
@@ -27,6 +29,7 @@ class Shader {
 
         // TODO Create family of overloaded "smart" uniform setters
         // void setUniform(std::string_view name,  std::vector<TYPE>  value) const;
+        void setUniform(const char* name, const std::vector<GLfloat> & values) const;
 };
 
 

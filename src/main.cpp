@@ -36,12 +36,18 @@ class Application {
         setupTriangleVAO();
 
         int width, height, n_channels;
-        unsigned char * text_test_data = stbi_load("assets/tex_test.png",&width,&height,&n_channels,0);
-        if (!text_test_data){
+        unsigned char * texture_data = stbi_load("assets/tex_test.png",&width,&height,&n_channels,0);
+        if (!texture_data){
           std::stringstream error_msg;
           error_msg << "Error loading texture file. stb_image error message: " << stbi_failure_reason();
           throw std::runtime_error(error_msg.str());
         }
+        GLuint texture;
+        glGenTextures(1,&texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,  GL_UNSIGNED_BYTE, texture_data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(texture_data);
 
         shader.use();
         while (!glfwWindowShouldClose(window)) {
@@ -52,13 +58,14 @@ class Application {
           float greenValue = sin(glfwGetTime()) / 2.0f + 0.5f;
           shader.setUniform("colorFromApplication",{0.0f, greenValue, 0.0f, 1.0f});
 
+          // If we had multiple VAOs, we would bind the one we want before drawing here
+          // If we had multiple textures, we would also bind the one we want here
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
           glfwSwapBuffers(window);
           glfwPollEvents();
         }
 
-        stbi_image_free(text_test_data);
 
         deleteTriangleBufferData();
 
@@ -79,7 +86,7 @@ class Application {
       if (glfwInit()==GLFW_FALSE)
           throw std::runtime_error("GLFW failed to initialize.");
 
-      // We don't plan to use compatibility features; core is sufficient.
+      // We don't plan to use compatibility features
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
       // Need at least OpenGL version 3.3
@@ -123,10 +130,10 @@ class Application {
       glGenBuffers(1,&VBO);
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
       float vertices[] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-         0.7f,  0.7f, 0.0f, 1.0f, 0.0f, 0.0f
+        -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+         0.7f,  0.7f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f
       };
       glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -135,10 +142,12 @@ class Application {
       GLuint indices[] = {0,1,2,2,3,1};
       glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices), indices, GL_STATIC_DRAW);
 
-      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(float),(void*)0);
-      glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(float),(void*)(3*sizeof(float)));
+      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)0);
+      glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(3*sizeof(float)));
+      glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(6*sizeof(float)));
       glEnableVertexAttribArray(0);
       glEnableVertexAttribArray(1);
+      glEnableVertexAttribArray(2);
 
       // We could unbind the VAO and only bind it when we want to draw the triangle, inside the render loop.
       // This might be safer so we dont overwrite the VAO accidentally.

@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <cmath>
 
 #include <stb_image.h>
@@ -34,6 +35,14 @@ class Application {
         Shader shader{"src/shaders/shader.vert","src/shaders/shader.frag"};
         setupTriangleVAO();
 
+        int width, height, n_channels;
+        unsigned char * text_test_data = stbi_load("assets/tex_test.png",&width,&height,&n_channels,0);
+        if (!text_test_data){
+          std::stringstream error_msg;
+          error_msg << "Error loading texture file. stb_image error message: " << stbi_failure_reason();
+          throw std::runtime_error(error_msg.str());
+        }
+
         shader.use();
         while (!glfwWindowShouldClose(window)) {
 
@@ -48,6 +57,8 @@ class Application {
           glfwSwapBuffers(window);
           glfwPollEvents();
         }
+
+        stbi_image_free(text_test_data);
 
         deleteTriangleBufferData();
 

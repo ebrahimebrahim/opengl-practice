@@ -8,6 +8,8 @@
 #include <string>
 #include <cmath>
 
+#include <stb_image.h>
+
 #include "Shader.h"
 
 

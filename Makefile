@@ -1,12 +1,12 @@
-INCLUDES = -Ilibs/glad/include -Ilibs/catch
-CFLAGS = -std=c++17 -O2 -Wall $(INCLUDES)
+INCLUDES = -Ilibs/glad/include -Ilibs/catch -Ilibs/stb_image
+CFLAGS = -std=c++17 -O2 $(INCLUDES)
 LDFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -ldl
 EXECUTABLE_NAME = opengltest
 TEST_EXECUTABLE_NAME = $(EXECUTABLE_NAME)_test
 SRCDIR = src
 
 # Object files for application other than main.o
-OBJ_FILES = glad.o Shader.o
+OBJ_FILES = glad.o Shader.o stb_image.o
 
 # Object files for testing other than main_test.o
 OBJ_FILES_TESTING = shader_test.o
@@ -15,13 +15,16 @@ OBJ_FILES_TESTING = shader_test.o
 # --- Application targets and executable ---
 
 main.o: $(SRCDIR)/main.cpp
-	g++ $(CFLAGS) -o main.o -c $(SRCDIR)/main.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -Wall -o main.o -c $(SRCDIR)/main.cpp $(LDFLAGS)
 
 glad.o: libs/glad/src/glad.c
 	g++ $(CFLAGS) -o glad.o -c libs/glad/src/glad.c $(LDFLAGS)
 
 Shader.o: $(SRCDIR)/Shader.cpp
-	g++ $(CFLAGS) -o Shader.o -c $(SRCDIR)/Shader.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -Wall -o Shader.o -c $(SRCDIR)/Shader.cpp $(LDFLAGS)
+
+stb_image.o: libs/stb_image/stb_image.cpp
+	g++ $(CFLAGS) -o $@ -c $^
 
 $(EXECUTABLE_NAME): $(OBJ_FILES) main.o
 	g++ $(CFLAGS) -o $(EXECUTABLE_NAME) $(OBJ_FILES) main.o $(LDFLAGS)

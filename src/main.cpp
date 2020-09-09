@@ -43,7 +43,6 @@ class Application {
           error_msg << "Error loading texture file. stb_image error message: " << stbi_failure_reason();
           throw std::runtime_error(error_msg.str());
         }
-        GLuint texture;
         glGenTextures(1,&texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,  GL_UNSIGNED_BYTE, texture_data);
@@ -61,6 +60,8 @@ class Application {
 
           // If we had multiple VAOs, we would bind the one we want before drawing here
           // If we had multiple textures, we would also bind the one we want here
+          // (we would do this for each texture unit, if what we are drawing using multiple texture units)
+          // If we had multiple shader programs, we would *use* one here
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
           glfwSwapBuffers(window);
@@ -68,7 +69,9 @@ class Application {
         }
 
 
+        glDeleteTextures(1,&texture);
         deleteTriangleBufferData();
+
 
         cleanupGLFW();
     }
@@ -81,6 +84,7 @@ class Application {
     GLuint VBO = 0;
     GLuint EBO = 0;
     GLuint VAO = 0;
+    GLuint texture;
 
     void initWindow() {
       glfwSetErrorCallback(glfw_error_callback);

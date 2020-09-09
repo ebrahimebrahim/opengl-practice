@@ -10,5 +10,5 @@ void main()
 {
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
     colorFromVertShader = vec4(aColor,1.0);
-    texCoord = vec2(1.0,1.0) - aTexCoord;
+    texCoord = aTexCoord;
 }

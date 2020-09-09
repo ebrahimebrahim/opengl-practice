@@ -35,6 +35,7 @@ class Application {
         Shader shader{"src/shaders/shader.vert","src/shaders/shader.frag"};
         setupTriangleVAO();
 
+        stbi_set_flip_vertically_on_load(true);
         int width, height, n_channels;
         unsigned char * texture_data = stbi_load("assets/tex_test.png",&width,&height,&n_channels,0);
         if (!texture_data){

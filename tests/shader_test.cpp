@@ -1,4 +1,4 @@
-#include<catch.hpp>
+#include<catch/catch.hpp>
 
 #include"opengl_context_setup.h"
 #include <utility>

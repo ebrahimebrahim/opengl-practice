@@ -1,4 +1,4 @@
-INCLUDES = -Ilibs/glad/include -Ilibs/catch -Ilibs/stb_image
+INCLUDES = -Ilibs -Ilibs/glad/include
 CFLAGS = -std=c++17 -O2 $(INCLUDES)
 LDFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -ldl
 EXECUTABLE_NAME = opengltest

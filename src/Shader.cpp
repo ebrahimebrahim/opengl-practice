@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 std::string fileToString(const char* filename){
   std::ifstream is(filename);
   if (!is.is_open()){
@@ -125,4 +127,17 @@ void Shader::setUniform(const char* name, const std::vector<GLfloat> & values) c
       error_msg << "Unable to set uniform variable of size " << values.size();
       throw std::runtime_error(error_msg.str());
   }
+}
+
+
+void Shader::setUniform(const char* name, const glm::mat4 & mat) const {
+  if (!shader_program_id)
+    throw std::runtime_error("Attempted to set a uniform in an uninitialized Shader");
+  GLint location = glGetUniformLocation(shader_program_id,name);
+  if (location == -1) {
+    std::stringstream error_msg;
+    error_msg << "Error looking up a uniform variable: " << name;
+    throw std::runtime_error(error_msg.str());
+  }
+  glUniformMatrix4fv(location,1,GL_FALSE,glm::value_ptr(mat));
 }

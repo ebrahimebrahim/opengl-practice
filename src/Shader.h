@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <vector>
 #include <string>
@@ -27,9 +28,9 @@ class Shader {
         // Tell OpenGL that we are now using this shader
         void use() const;
 
-        // TODO Create family of overloaded "smart" uniform setters
-        // void setUniform(std::string_view name,  std::vector<TYPE>  value) const;
+
         void setUniform(const char* name, const std::vector<GLfloat> & values) const;
+        void setUniform(const char* name, const glm::mat4 & mat) const;
 };
 
 

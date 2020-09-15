@@ -56,7 +56,7 @@ class Application {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model,glm::radians(-55.0f),glm::vec3(0.0f,0.0f,1.0f));
+        model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
 
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
@@ -83,6 +83,8 @@ class Application {
           // (we would do this for each texture unit, if what we are drawing using multiple texture units)
           // If we had multiple shader programs, we would *use* one here
           // If our uniform variables needed to change, we would update them here.
+          model = glm::rotate(model, float(glfwGetTime()) * glm::radians(0.05f),glm::vec3(0.0f,1.0f,0.0f));
+          shader.setUniform("model",model);
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
           glfwSwapBuffers(window);

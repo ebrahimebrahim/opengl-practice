@@ -69,11 +69,13 @@ class Application {
         shader.setUniform("view",view);
         shader.setUniform("projection",projection);
 
+        glEnable(GL_DEPTH_TEST);
+
 
         while (!glfwWindowShouldClose(window)) {
 
           glClearColor(0.3,0.2,0.2,1.0);
-          glClear(GL_COLOR_BUFFER_BIT);
+          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
           float greenValue = sin(glfwGetTime()) / 2.0f + 0.5f;
           shader.setUniform("colorFromApplication",{0.0f, greenValue, 0.0f, 1.0f});

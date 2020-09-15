@@ -11,6 +11,9 @@
 
 #include <stb_image/stb_image.h>
 #include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "Shader.h"
 
@@ -34,6 +37,7 @@ class Application {
         initWindow();
 
         Shader shader{"src/shaders/shader.vert","src/shaders/shader.frag"};
+        shader.use();
         setupTriangleVAO();
 
         stbi_set_flip_vertically_on_load(true);
@@ -50,7 +54,22 @@ class Application {
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(texture_data);
 
-        shader.use();
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model,glm::radians(-55.0f),glm::vec3(0.0f,0.0f,1.0f));
+
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+        // Moving everything FORWARD (-z dir) by 3 is effectively us moving BACK by 4
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f),float(WIDTH)/float(HEIGHT),0.1f,100.0f);
+
+
+        shader.setUniform("model",model);
+        shader.setUniform("view",view);
+        shader.setUniform("projection",projection);
+
+
         while (!glfwWindowShouldClose(window)) {
 
           glClearColor(0.3,0.2,0.2,1.0);
@@ -63,6 +82,7 @@ class Application {
           // If we had multiple textures, we would also bind the one we want here
           // (we would do this for each texture unit, if what we are drawing using multiple texture units)
           // If we had multiple shader programs, we would *use* one here
+          // If our uniform variables needed to change, we would update them here.
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
           glfwSwapBuffers(window);
@@ -136,7 +156,7 @@ class Application {
       glGenBuffers(1,&VBO);
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
       float vertices[] = {
-        -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
          0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
          0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
          0.7f,  0.7f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f

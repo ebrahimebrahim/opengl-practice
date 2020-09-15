@@ -129,7 +129,8 @@ void Shader::setUniform(const char* name, const std::vector<GLfloat> & values) c
   }
 }
 
-
+// Note: setting uniform variables needs to be done AFTER glUseProgram on shader
+// So make sure to use "use" method above before doing this
 void Shader::setUniform(const char* name, const glm::mat4 & mat) const {
   if (!shader_program_id)
     throw std::runtime_error("Attempted to set a uniform in an uninitialized Shader");

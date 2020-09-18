@@ -86,7 +86,7 @@ class Application {
         std::cout << "And here is glm::lookAt matrix straight from initial data:\n"
           << glm::to_string(view) << "\n";
         std::cout << "Note that when we print this it lists the *columns*\n";
-
+        // Note: now we are actually just going to recompute view matrix at each frame
 
 
         // -- End setting up camera
@@ -96,7 +96,13 @@ class Application {
         shader.setUniform("projection",projection);
 
 
+        float time_at_previous_frame = 0.0f;
         while (!glfwWindowShouldClose(window)) {
+          float current_time = float(glfwGetTime());
+          float delta = current_time-time_at_previous_frame;
+          time_at_previous_frame = current_time;
+          // std::cout << "FPS: " << 1.0f/delta << "\n";
+
 
           glClearColor(0.3,0.2,0.2,1.0);
           glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,6 +118,10 @@ class Application {
           model = glm::mat4(1.0f);
           model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
           model = glm::rotate(model, float(glfwGetTime()) * glm::radians(20.0f),glm::vec3(0.0f,1.0f,0.0f));
+
+          moveCamera(delta,cameraPos,cameraTarget);
+          view = glm::lookAt(cameraPos,cameraTarget,glm::vec3(0.0,1.0,0.0));
+
           shader.setUniform("model",model);
           shader.setUniform("view",view);
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
@@ -220,6 +230,30 @@ class Application {
       VBO=0;
       EBO=0;
     }
+
+    // move camera position and camera target one frame's worth
+    // based on the current glfw input state in the window
+    void moveCamera(float delta, glm::vec3 & pos, glm::vec3 & tgt) {
+      float walkSpeed = 1.0f;
+      float walkDist = delta * walkSpeed;
+      if (glfwGetKey(window,GLFW_KEY_W) == GLFW_PRESS)
+        pos += walkDist * glm::normalize(tgt - pos);
+      if (glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
+        pos -= walkDist * glm::normalize(tgt - pos);
+      if (glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS){
+        glm::vec3 camRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),pos-tgt));
+        pos -= walkDist * camRight;
+        tgt -= walkDist * camRight;
+      }
+      if (glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS){
+        glm::vec3 camRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),pos-tgt));
+        pos += walkDist * camRight;
+        tgt += walkDist * camRight;
+      }
+    }
+
+
+
 
 };
 

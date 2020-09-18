@@ -14,6 +14,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/geometric.hpp>
 
 #include "Shader.h"
 
@@ -56,20 +57,43 @@ class Application {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
 
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+        // glm::mat4 view = glm::mat4(1.0f);
+        // view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
         // Moving everything FORWARD (-z dir) by 3 is effectively us moving BACK by 4
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f),float(WIDTH)/float(HEIGHT),0.1f,100.0f);
 
 
-        shader.setUniform("model",model);
-        shader.setUniform("view",view);
-        shader.setUniform("projection",projection);
-
         glEnable(GL_DEPTH_TEST);
+
+
+        // -- Setting up a camera
+
+        auto cameraPos = glm::vec3(0.0f,0.0f,3.0f);
+        auto cameraTarget = glm::vec3(0.0f,0.0f,0.0f);
+        auto cameraNegDirection = glm::normalize(cameraPos - cameraTarget);
+        auto cameraRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),cameraNegDirection));
+        auto cameraUp = glm::normalize(glm::cross(cameraNegDirection,cameraRight));
+        std::cout
+          << "Right: " << glm::to_string(cameraRight) << "\n"
+          << "Up: "    << glm::to_string(cameraUp) << "\n"
+          << "Back: "  << glm::to_string(cameraNegDirection) << "\n"
+          << "Pos: "   << glm::to_string(cameraPos) << "\n\n";
+
+        //But here is an easier way to jump right to view matrix using cameraPos and cameraTarget:
+        glm::mat4 view = glm::lookAt(cameraPos,cameraTarget,glm::vec3(0.0,1.0,0.0));
+        std::cout << "And here is glm::lookAt matrix straight from initial data:\n"
+          << glm::to_string(view) << "\n";
+        std::cout << "Note that when we print this it lists the *columns*\n";
+
+
+
+        // -- End setting up camera
+
+
+        // I guess this one wont change much so let's set it once here
+        shader.setUniform("projection",projection);
 
 
         while (!glfwWindowShouldClose(window)) {
@@ -85,8 +109,11 @@ class Application {
           // (we would do this for each texture unit, if what we are drawing using multiple texture units)
           // If we had multiple shader programs, we would *use* one here
           // If our uniform variables needed to change, we would update them here.
-          model = glm::rotate(model, float(glfwGetTime()) * glm::radians(0.05f),glm::vec3(0.0f,1.0f,0.0f));
+          model = glm::mat4(1.0f);
+          model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
+          model = glm::rotate(model, float(glfwGetTime()) * glm::radians(20.0f),glm::vec3(0.0f,1.0f,0.0f));
           shader.setUniform("model",model);
+          shader.setUniform("view",view);
           glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
           glfwSwapBuffers(window);

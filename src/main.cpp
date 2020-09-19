@@ -110,7 +110,6 @@ class Application {
           // std::cout << "FPS: " << 1.0f/delta << "\n";
           glm::vec2 mouse_delta = cursor - cursor_at_previous_frame;
           cursor_at_previous_frame = cursor;
-          std::cout << glm::to_string(mouse_delta) << "\n";
 
 
 
@@ -129,7 +128,7 @@ class Application {
           model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
           model = glm::rotate(model, float(glfwGetTime()) * glm::radians(20.0f),glm::vec3(0.0f,1.0f,0.0f));
 
-          moveCamera(delta,cameraPos,cameraDir);
+          moveCamera(delta,mouse_delta,cameraPos,cameraDir);
           view = glm::lookAt(cameraPos,cameraPos+cameraDir,glm::vec3(0.0,1.0,0.0));
 
           shader.setUniform("model",model);
@@ -256,21 +255,24 @@ class Application {
 
     // move camera position and camera direction one frame's worth
     // based on the current glfw input state in the window
-    void moveCamera(float delta, glm::vec3 & pos, glm::vec3 & dir) {
+    void moveCamera(float delta, glm::vec2 mouse_delta, glm::vec3 & pos, glm::vec3 & dir) {
       float walkSpeed = 1.0f;
       float walkDist = delta * walkSpeed;
+      glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
+      glm::vec3 worldUp  = glm::vec3(0.0f,1.0f,0.0f);
       if (glfwGetKey(window,GLFW_KEY_W) == GLFW_PRESS)
         pos += walkDist * dir;
       if (glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
         pos -= walkDist * dir;
       if (glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS){
-        glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
+        glm::vec3 camRight = glm::normalize(glm::cross(dir,worldUp));
         pos -= walkDist * camRight;
       }
       if (glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS){
-        glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
         pos += walkDist * camRight;
       }
+      dir = glm::rotate(dir,-0.1f*delta*mouse_delta[0],worldUp);
+      dir = glm::rotate(dir,-0.1f*delta*mouse_delta[1],camRight);
     }
 
 

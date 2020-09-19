@@ -256,7 +256,8 @@ class Application {
     // move camera position and camera direction one frame's worth
     // based on the current glfw input state in the window
     void moveCamera(float delta, glm::vec2 mouse_delta, glm::vec3 & pos, glm::vec3 & dir) {
-      float walkSpeed = 1.0f;
+      float walkSpeed = 2.0f;
+      float mouseSensitivity = 0.0015f;
       float walkDist = delta * walkSpeed;
       glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
       glm::vec3 worldUp  = glm::vec3(0.0f,1.0f,0.0f);
@@ -271,8 +272,8 @@ class Application {
       if (glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS){
         pos += walkDist * camRight;
       }
-      dir = glm::rotate(dir,-0.1f*delta*mouse_delta[0],worldUp);
-      dir = glm::rotate(dir,-0.1f*delta*mouse_delta[1],camRight);
+      dir = glm::rotate(dir,-mouseSensitivity*mouse_delta[0],worldUp);
+      dir = glm::rotate(dir,-mouseSensitivity*mouse_delta[1],camRight);
     }
 
 

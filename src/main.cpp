@@ -33,6 +33,10 @@ void glfw_resize_callback(GLFWwindow* window, int width, int height){
     glViewport(0,0,width,height);
 }
 
+void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+  std::cout << "Cursor position: (" << xpos << " , " << ypos << ")\n";
+}
+
 class Application {
   public:
     void run() {
@@ -169,6 +173,8 @@ class Application {
       glfwSetKeyCallback(window, glfw_key_callback);
       glfwSetFramebufferSizeCallback(window, glfw_resize_callback);
       glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
+      glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
+
 
       // make opengl context current in the window
       glfwMakeContextCurrent(window);

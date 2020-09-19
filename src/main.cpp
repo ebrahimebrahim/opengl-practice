@@ -272,8 +272,14 @@ class Application {
       if (glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS){
         pos += walkDist * camRight;
       }
+
+      // set yaw
       dir = glm::rotate(dir,-mouseSensitivity*mouse_delta[0],worldUp);
-      dir = glm::rotate(dir,-mouseSensitivity*mouse_delta[1],camRight);
+
+      //set pitch
+      glm::vec3 new_dir = glm::rotate(dir,-mouseSensitivity*mouse_delta[1],camRight);
+      if (new_dir[0]*dir[0] + new_dir[2]*dir[2] > 0.1f) // don't allow pitch beyond zenith/nadir
+        dir = new_dir;
     }
 
 

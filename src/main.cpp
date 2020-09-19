@@ -33,9 +33,8 @@ void glfw_resize_callback(GLFWwindow* window, int width, int height){
     glViewport(0,0,width,height);
 }
 
-void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-  std::cout << "Cursor position: (" << xpos << " , " << ypos << ")\n";
-}
+void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+
 
 class Application {
   public:
@@ -264,9 +263,16 @@ class Application {
 
 };
 
+// application is now a global :(
+Application app;
+
+void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+  // std::cout << "Cursor position: (" << xpos << " , " << ypos << ")\n";
+
+}
+
 
 int main() {
-    Application app;
 
     try {
         app.run();

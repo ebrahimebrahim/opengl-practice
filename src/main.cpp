@@ -178,8 +178,12 @@ class Application {
 
       glfwSetKeyCallback(window, glfw_key_callback);
       glfwSetFramebufferSizeCallback(window, glfw_resize_callback);
+
       glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
       glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
+      double initial_cursor_xpos, initial_cursor_ypos;
+      glfwGetCursorPos(window, &initial_cursor_xpos, &initial_cursor_ypos);
+      cursor = glm::vec2(initial_cursor_xpos,initial_cursor_ypos);
 
 
       // make opengl context current in the window

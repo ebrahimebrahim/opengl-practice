@@ -15,6 +15,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/geometric.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "Shader.h"
 
@@ -70,11 +71,12 @@ class Application {
 
         // -- Setting up a camera
 
-        auto cameraPos = glm::vec3(0.0f,0.0f,3.0f);
+        auto cameraPos = glm::vec3(0.0f,0.0f,3.0f); // cam origin
         auto cameraTarget = glm::vec3(0.0f,0.0f,0.0f);
-        auto cameraNegDirection = glm::normalize(cameraPos - cameraTarget);
-        auto cameraRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),cameraNegDirection));
-        auto cameraUp = glm::normalize(glm::cross(cameraNegDirection,cameraRight));
+        auto cameraNegDirection = glm::normalize(cameraPos - cameraTarget); // cam z axis
+        auto cameraDir = - cameraNegDirection;
+        auto cameraRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),cameraNegDirection)); // cam x axis
+        auto cameraUp = glm::normalize(glm::cross(cameraNegDirection,cameraRight)); // cam y axis
         std::cout
           << "Right: " << glm::to_string(cameraRight) << "\n"
           << "Up: "    << glm::to_string(cameraUp) << "\n"
@@ -119,8 +121,8 @@ class Application {
           model = glm::rotate(model,glm::radians(50.0f),glm::vec3(0.0f,1.0f,0.0f));
           model = glm::rotate(model, float(glfwGetTime()) * glm::radians(20.0f),glm::vec3(0.0f,1.0f,0.0f));
 
-          moveCamera(delta,cameraPos,cameraTarget);
-          view = glm::lookAt(cameraPos,cameraTarget,glm::vec3(0.0,1.0,0.0));
+          moveCamera(delta,cameraPos,cameraDir);
+          view = glm::lookAt(cameraPos,cameraPos+cameraDir,glm::vec3(0.0,1.0,0.0));
 
           shader.setUniform("model",model);
           shader.setUniform("view",view);
@@ -231,24 +233,22 @@ class Application {
       EBO=0;
     }
 
-    // move camera position and camera target one frame's worth
+    // move camera position and camera direction one frame's worth
     // based on the current glfw input state in the window
-    void moveCamera(float delta, glm::vec3 & pos, glm::vec3 & tgt) {
+    void moveCamera(float delta, glm::vec3 & pos, glm::vec3 & dir) {
       float walkSpeed = 1.0f;
       float walkDist = delta * walkSpeed;
       if (glfwGetKey(window,GLFW_KEY_W) == GLFW_PRESS)
-        pos += walkDist * glm::normalize(tgt - pos);
+        pos += walkDist * dir;
       if (glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
-        pos -= walkDist * glm::normalize(tgt - pos);
+        pos -= walkDist * dir;
       if (glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS){
-        glm::vec3 camRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),pos-tgt));
+        glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
         pos -= walkDist * camRight;
-        tgt -= walkDist * camRight;
       }
       if (glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS){
-        glm::vec3 camRight = glm::normalize(glm::cross(glm::vec3(0.0,1.0,0.0),pos-tgt));
+        glm::vec3 camRight = glm::normalize(glm::cross(dir,glm::vec3(0.0,1.0,0.0)));
         pos += walkDist * camRight;
-        tgt += walkDist * camRight;
       }
     }
 

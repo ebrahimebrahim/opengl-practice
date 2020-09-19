@@ -102,12 +102,16 @@ class Application {
 
 
         float time_at_previous_frame = 0.0f;
+        glm::vec2 cursor_at_previous_frame = cursor;
         while (!glfwWindowShouldClose(window)) {
-          std::cout << glm::to_string(cursor) << "\n";
           float current_time = float(glfwGetTime());
           float delta = current_time-time_at_previous_frame;
           time_at_previous_frame = current_time;
           // std::cout << "FPS: " << 1.0f/delta << "\n";
+          glm::vec2 mouse_delta = cursor - cursor_at_previous_frame;
+          cursor_at_previous_frame = cursor;
+          std::cout << glm::to_string(mouse_delta) << "\n";
+
 
 
           glClearColor(0.3,0.2,0.2,1.0);

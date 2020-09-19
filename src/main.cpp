@@ -103,6 +103,7 @@ class Application {
 
         float time_at_previous_frame = 0.0f;
         while (!glfwWindowShouldClose(window)) {
+          std::cout << glm::to_string(cursor) << "\n";
           float current_time = float(glfwGetTime());
           float delta = current_time-time_at_previous_frame;
           time_at_previous_frame = current_time;
@@ -143,10 +144,16 @@ class Application {
         cleanupGLFW();
     }
 
+    void set_cursor_pos(const double& xpos, const double& ypos){
+      cursor = glm::vec2(xpos,ypos);
+    }
+
   private:
     GLFWwindow* window = nullptr;
     const uint32_t WIDTH  = 800;
     const uint32_t HEIGHT = 600;
+
+    glm::vec2 cursor;
 
     GLuint VBO = 0;
     GLuint EBO = 0;
@@ -259,8 +266,6 @@ class Application {
     }
 
 
-
-
 };
 
 // application is now a global :(
@@ -268,7 +273,7 @@ Application app;
 
 void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
   // std::cout << "Cursor position: (" << xpos << " , " << ypos << ")\n";
-
+  app.set_cursor_pos(xpos,ypos);
 }
 
 

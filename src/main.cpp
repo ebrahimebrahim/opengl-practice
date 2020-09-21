@@ -38,9 +38,56 @@ void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 
 class Application {
   public:
-    void run() {
-        initWindow();
 
+    Application() {
+      glfwSetErrorCallback(glfw_error_callback);
+      if (glfwInit()==GLFW_FALSE)
+          throw std::runtime_error("GLFW failed to initialize.");
+
+      // We don't plan to use compatibility features
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+      // Need at least OpenGL version 3.3
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+      window = glfwCreateWindow(WIDTH, HEIGHT, "Peup", nullptr, nullptr);
+      if (!window)
+          throw std::runtime_error("Failed to create GLFW window.");
+
+      glfwSetKeyCallback(window, glfw_key_callback);
+      glfwSetFramebufferSizeCallback(window, glfw_resize_callback);
+
+      glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
+      glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
+      double initial_cursor_xpos, initial_cursor_ypos;
+      glfwGetCursorPos(window, &initial_cursor_xpos, &initial_cursor_ypos);
+      cursor = glm::vec2(initial_cursor_xpos,initial_cursor_ypos);
+
+
+      // make opengl context current in the window
+      glfwMakeContextCurrent(window);
+
+      // glad knows how to during-runtime find the right OpenGL functions in a particular environment
+      // somehow this line brings in the right OpenGL functions for us to use...
+      // but I really don't see what is the connection to GLFW here and who is doing what exactly...
+      if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+          throw std::runtime_error("Failed to initialize GLAD.");
+
+      // vsync
+      glfwSwapInterval(1);
+
+      glViewport(0,0,WIDTH,HEIGHT);
+    }
+
+    
+    ~Application() {
+      glfwDestroyWindow(window);
+      glfwTerminate();
+    }
+
+
+    void run() {
         Shader shader{"src/shaders/shader.vert","src/shaders/shader.frag"};
         shader.use();
         setupTriangleVAO();
@@ -142,9 +189,6 @@ class Application {
 
         glDeleteTextures(1,&texture);
         deleteTriangleBufferData();
-
-
-        cleanupGLFW();
     }
 
     void set_cursor_pos(const double& xpos, const double& ypos){
@@ -163,51 +207,6 @@ class Application {
     GLuint VAO = 0;
     GLuint texture;
 
-    void initWindow() {
-      glfwSetErrorCallback(glfw_error_callback);
-      if (glfwInit()==GLFW_FALSE)
-          throw std::runtime_error("GLFW failed to initialize.");
-
-      // We don't plan to use compatibility features
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-      // Need at least OpenGL version 3.3
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-      window = glfwCreateWindow(WIDTH, HEIGHT, "Peup", nullptr, nullptr);
-      if (!window)
-          throw std::runtime_error("Failed to create GLFW window.");
-
-      glfwSetKeyCallback(window, glfw_key_callback);
-      glfwSetFramebufferSizeCallback(window, glfw_resize_callback);
-
-      glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
-      glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
-      double initial_cursor_xpos, initial_cursor_ypos;
-      glfwGetCursorPos(window, &initial_cursor_xpos, &initial_cursor_ypos);
-      cursor = glm::vec2(initial_cursor_xpos,initial_cursor_ypos);
-
-
-      // make opengl context current in the window
-      glfwMakeContextCurrent(window);
-
-      // glad knows how to during-runtime find the right OpenGL functions in a particular environment
-      // somehow this line brings in the right OpenGL functions for us to use...
-      // but I really don't see what is the connection to GLFW here and who is doing what exactly...
-      if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-          throw std::runtime_error("Failed to initialize GLAD.");
-
-      // vsync
-      glfwSwapInterval(1);
-
-      glViewport(0,0,WIDTH,HEIGHT);
-    }
-
-    void cleanupGLFW() {
-      glfwDestroyWindow(window);
-      glfwTerminate();
-    }
 
 
 
